@@ -4,7 +4,7 @@ import pygame
 import random
 import time
 
-os.chdir(os.path.join(os.path.abspath(os.path.curdir),u'assets'))
+os.chdir(os.path.join(os.path.abspath(os.path.curdir), u'assets'))
 
 pygame.init()
 
@@ -53,12 +53,12 @@ backgroundMusic = pygame.mixer.music.load("background_music.wav")
 clock = pygame.time.Clock()
 
 # game wide constants
-pad_length = int(display_height / 6) # 100
-pad_width = int(display_width / 45) # 17
-ball_size = int(display_height / 40) # 15
+pad_length = int(display_height / 6)  # 100
+pad_width = int(display_width / 45)  # 17
+ball_size = int(display_height / 40)  # 15
 effect_size = 30
-pad_speed = int(display_height / 45) # 13
-ball_speed_init = int(display_height / 50) # 12
+pad_speed = int(display_height / 45)  # 13
+ball_speed_init = int(display_height / 50)  # 12
 ball_speed_rate = 1.05
 ball_spin_effect = 1.1
 ball_spin_fade = 0.008
@@ -68,11 +68,19 @@ win_condition = 10
 FPS = 45
 
 # ball reflection lambdas
-x_reflect = lambda x: 360 - x
-y_reflect = lambda x: 180 - x
-dumb = lambda : random.randint(1,10) == 1
+
+
+def x_reflect(x): return 360 - x
+
+
+def y_reflect(x): return 180 - x
+
+
+def dumb(): return random.randint(1, 10) == 1
 
 # create text objects
+
+
 def text_objects(msg, color, size):
     if size == "small":
         screen_text = smallFont.render(msg, True, color)
@@ -83,16 +91,19 @@ def text_objects(msg, color, size):
     return screen_text, screen_text.get_rect()
 
 # display mmessage
+
+
 def displayMsg(msg, color, y_displace=0, size="small"):
     textSurf, textRect = text_objects(msg, color, size)
     textRect.center = (display_width / 2, display_height / 2 + y_displace)
     gameDisplay.blit(textSurf, textRect)
 
 # display score of players
+
+
 def displayDetail(left_score, right_score, edge_bounce):
-    scoreSurf, scoreRect = text_objects(str(left_score)+" : "+str(right_score),
-                                      black,
-                                      "small")
+    scoreSurf, scoreRect = text_objects(
+        str(left_score)+" : "+str(right_score), black, "small")
     scoreRect.center = (display_width / 2, 30)
     gameDisplay.blit(scoreSurf, scoreRect)
     if right_score != win_condition and left_score != win_condition:
@@ -111,22 +122,28 @@ def displayDetail(left_score, right_score, edge_bounce):
             bounceRect.center = (display_width / 2 - 100, 30)
             gameDisplay.blit(bounceSurf, bounceRect)
     if edge_bounce >= edge_bounce_limit - 3:
-        msg = "Ball respawn after "+str(edge_bounce_limit-edge_bounce)+" edge bounce"
-        bounceSurf, bounceRect = text_objects(msg,
-                                              black,
-                                              "small")
+        msg = "Ball respawn after "+str(
+            edge_bounce_limit-edge_bounce)+" edge bounce"
+        bounceSurf, bounceRect = text_objects(msg, black, "small")
         bounceRect.center = (display_width / 2, 60)
         gameDisplay.blit(bounceSurf, bounceRect)
 
 # display text for buttons
+
+
 def buttonText(msg, color, location, size="small"):
     button_x, button_y, button_width, button_height = location
     textSurf, textRect = text_objects(msg, color, size)
-    textRect.center = ((button_x + button_width/2), (button_y + button_height/2))
+    textRect.center = (
+        (button_x + button_width/2), (button_y + button_height/2))
     gameDisplay.blit(textSurf, textRect)
 
 # display responsive button
-def displayButton(text, location, unfocus_color, focus_color, text_color=black, action=None):
+
+
+def displayButton(
+        text,
+        location, unfocus_color, focus_color, text_color=black, action=None):
     bX, bY, bWidth, bHeight = location
     cursor = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -138,24 +155,32 @@ def displayButton(text, location, unfocus_color, focus_color, text_color=black, 
         pygame.draw.rect(gameDisplay, unfocus_color, location)
     buttonText(text, text_color, location)
 
+
 def displayBackground():
     gameDisplay.fill(white)
-    gameDisplay.blit(backgroundImg,[0,0])
-    pygame.draw.rect(gameDisplay, light_blue, [0, 0, pad_width, display_height])
+    gameDisplay.blit(backgroundImg, [0, 0])
+    pygame.draw.rect(
+        gameDisplay, light_blue, [0, 0, pad_width, display_height])
     pygame.draw.rect(gameDisplay, light_blue, [display_width - pad_width,
                                                0,
                                                pad_width,
                                                display_height])
 
 # display player pads
+
+
 def displayPad(x, y, length):
     pygame.draw.rect(gameDisplay, black, [x, y, pad_width, length])
 
 # display ball
+
+
 def displayBall(x, y):
     pygame.draw.rect(gameDisplay, red, [x, y, ball_size, ball_size])
 
 # reset ball position and variables
+
+
 def ballReset(side):
     if side == "left":
         ball_dir = random.randint(130, 230)
@@ -174,20 +199,26 @@ def ballReset(side):
     return ball_x, ball_y, ball_dir, ball_speed, ball_spin
 
 # reset pad position and variables
+
+
 def padReset():
     temp = int((display_height - pad_length) / 2)
     return temp, temp
 
 # work out the coordination of the actual hit point
+
+
 def hit_point(cur_x, cur_y, dir, hit_x=None, hit_y=None):
-    if hit_x != None and hit_y == None:
+    if hit_x is not None and hit_y is None:
         return cur_y - (cur_x - hit_x) * math.tan(math.radians(dir))
-    elif hit_x == None and hit_y != None:
+    elif hit_x is None and hit_y is not None:
         return cur_x - (cur_y - hit_y) / math.tan(math.radians(dir))
     else:
         raise ValueError("only one of hit_x and hit_y should be given.")
 
 # game initiate window
+
+
 def gameInit():
     pygame.mixer.music.play(-1)
 
@@ -195,17 +226,22 @@ def gameInit():
     gameStart = False
     while not gameStart:
         # display initiate window
-        gameDisplay.blit(backgroundImg,[0,0])
+        gameDisplay.blit(backgroundImg, [0, 0])
         displayMsg("Pong PvC", olivedrab, -170, "large")
-        displayMsg("Move the pads to bouce the ball and guard the goal", brown, -70)
+        displayMsg(
+            "Move the pads to bouce the ball and guard the goal", brown, -70)
         displayMsg("hit while moving you pad to add spin.", brown, -40)
         displayMsg("First one to 10 wins!", brown, -10)
         displayMsg("Player defualt - W and S", brown, 20)
 
         # display bottons
-        displayButton("Play", [150, 400, 100, 50], green, light_green, action=gameLoop)
-        displayButton("Settings",[350, 400, 100, 50], yellow, light_yellow, action=gameSettings)
-        displayButton("Quit", [550, 400, 100, 50], red, light_red, action=gameQuit)
+        displayButton(
+            "Play", [150, 400, 100, 50], green, light_green, action=gameLoop)
+        displayButton(
+            "Settings",
+            [350, 400, 100, 50], yellow, light_yellow, action=gameSettings)
+        displayButton(
+            "Quit", [550, 400, 100, 50], red, light_red, action=gameQuit)
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -221,15 +257,18 @@ def gameInit():
         clock.tick(FPS)
 
 # game initiate window
+
+
 def gameSettings():
-    with open("settings.qgd",'r') as f:
-        data = [int(line.replace('\n','')) for line in f.readlines()]
+    with open("settings.qgd", 'r') as f:
+        data = [int(line.replace('\n', '')) for line in f.readlines()]
     # check response
     while True:
         # display title and instructions
-        gameDisplay.blit(backgroundImg,[0,0])
+        gameDisplay.blit(backgroundImg, [0, 0])
         displayMsg("Settings", olivedrab, -230, "large")
-        displayMsg("Please do not modify settings with text editor!", brown, -140)
+        displayMsg(
+            "Please do not modify settings with text editor!", brown, -140)
 
         # display sound settings
         displayMsg("Game-time music", brown, -110)
@@ -251,10 +290,12 @@ def gameSettings():
         else:
             setKeyName = "Pad moves Down"
             setKeyNo = 1
-        displayMsg("Move the cursor to upper or lower side to change key.", brown, 10)
+        displayMsg(
+            "Move the cursor to upper or lower side to change key.", brown, 10)
         displayMsg("You can not use key that are pre-defined!", brown, 40)
         displayMsg("Set Key for: " + setKeyName, brown, 70)
-        displayMsg("Current Key: " + pygame.key.name(data[setKeyNo]), brown, 100)
+        displayMsg(
+            "Current Key: " + pygame.key.name(data[setKeyNo]), brown, 100)
 
         # back button
         click = pygame.mouse.get_pressed()
@@ -262,7 +303,7 @@ def gameSettings():
             pygame.draw.rect(gameDisplay, light_green, [350, 480, 100, 50])
             if click[0]:
                 with open('settings.qgd', 'w') as f:
-                    f.write('\n'.join(map(str,data)))
+                    f.write('\n'.join(map(str, data)))
                 return
         else:
             pygame.draw.rect(gameDisplay, green, [350, 480, 100, 50])
@@ -275,14 +316,14 @@ def gameSettings():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 with open('settings.qgd', 'w') as f:
-                    f.write('\n'.join(map(str,data)))
+                    f.write('\n'.join(map(str, data)))
                 gameQuit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     gameLoop()
                 elif event.key == pygame.K_q:
                     with open('settings.qgd', 'w') as f:
-                        f.write('\n'.join(map(str,data)))
+                        f.write('\n'.join(map(str, data)))
                     gameQuit()
                 elif event.key == pygame.K_b:
                     data[4] = 0 if data[4] else 1
@@ -293,6 +334,8 @@ def gameSettings():
         clock.tick(FPS)
 
 # game pausing window
+
+
 def gamePause():
     # stop music and sound effects
     pygame.mixer.music.pause()
@@ -315,7 +358,8 @@ def gamePause():
         else:
             pygame.draw.rect(gameDisplay, green, [200, 380, 100, 50])
         buttonText("Continue", black, [200, 380, 100, 50])
-        displayButton("Quit", [500, 380, 100, 50], red, light_red, action=gameQuit)
+        displayButton(
+            "Quit", [500, 380, 100, 50], red, light_red, action=gameQuit)
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -330,6 +374,8 @@ def gamePause():
         clock.tick(FPS)
 
 # game over window
+
+
 def gameOver(side):
     pygame.mixer.Sound.play(cheerSound)
     pygame.mouse.set_visible(True)
@@ -340,8 +386,11 @@ def gameOver(side):
     gameStart = False
     while not gameStart:
         # display bottons
-        displayButton("Rematch", [250, 380, 100, 50], green, light_green, action=gameLoop)
-        displayButton("Quit", [450, 380, 100, 50], red, light_red, action=gameQuit)
+        displayButton(
+            "Rematch",
+            [250, 380, 100, 50], green, light_green, action=gameLoop)
+        displayButton(
+            "Quit", [450, 380, 100, 50], red, light_red, action=gameQuit)
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -356,13 +405,15 @@ def gameOver(side):
         clock.tick(FPS)
 
 # main loop of the game
+
+
 def gameLoop():
-    with open("settings.qgd",'r') as f:
-        data = [int(line.replace('\n','')) for line in f.readlines()]
+    with open("settings.qgd", 'r') as f:
+        data = [int(line.replace('\n', '')) for line in f.readlines()]
 
     # initiate using settings
     pygame.mouse.set_visible(False)
-    gameDisplay.blit(backgroundImg,[0,0])
+    gameDisplay.blit(backgroundImg, [0, 0])
     displayMsg("Initiating...", black, -250, "large")
     displayMsg("Please wait for a while.", red, -160)
     leftPadUp, leftPadDown, rightPadUp, rightPadDown = data[:4]
@@ -370,7 +421,7 @@ def gameLoop():
     if not backgroundMusicOn:
         pygame.mixer.music.pause()
 
-    #initiate loop condition variables
+    # initiate loop condition variables
     gameExit = False
     leftScore = 0
     rightScore = 0
@@ -388,7 +439,7 @@ def gameLoop():
     # leftPadLength = display_height # test left side full-length pad
 
     # initiate ball variables
-    serveSide = random.choice(["left","right"])
+    serveSide = random.choice(["left", "right"])
     ballX, ballY, ballDir, ballSpeed, ballSpin = ballReset(serveSide)
 
     # play-time loop
@@ -423,12 +474,14 @@ def gameLoop():
         if ballX <= pad_width:
             ballSpin *= -1
             edgeBounce = 0
-            if ballY + ball_size < leftPadY or ballY > leftPadY + leftPadLength:
+            if (ballY + ball_size < leftPadY or
+                    ballY > leftPadY + leftPadLength):
                 pygame.display.flip()
                 if soundEffectOn:
                     pygame.mixer.Sound.play(whistleSound)
                 serveSide = "left"
-                ballX, ballY, ballDir, ballSpeed, ballSpin = ballReset(serveSide)
+                ballX, ballY, ballDir, ballSpeed, ballSpin = ballReset(
+                    serveSide)
                 leftPadY, rightPadY = padReset()
                 rightScore += 1
             else:
@@ -440,11 +493,13 @@ def gameLoop():
         elif ballX >= display_width - pad_width - ball_size:
             ballSpin *= -1
             edgeBounce = 0
-            if ballY + ball_size < rightPadY or ballY > rightPadY + rightPadLength:
+            if (ballY + ball_size < rightPadY or
+                    ballY > rightPadY + rightPadLength):
                 if soundEffectOn:
                     pygame.mixer.Sound.play(whistleSound)
                 serveSide = "right"
-                ballX, ballY, ballDir, ballSpeed, ballSpin = ballReset(serveSide)
+                ballX, ballY, ballDir, ballSpeed, ballSpin = ballReset(
+                    serveSide)
                 leftPadY, rightPadY = padReset()
                 leftScore += 1
             else:
@@ -486,14 +541,17 @@ def gameLoop():
             ballX = hit_point(ballX, ballY, ballDir, hit_y=0)
             ballY = 0
         elif ballY >= display_height - ball_size:
-            ballX = hit_point(ballX, ballY, ballDir, hit_y=display_height - ball_size)
+            ballX = hit_point(
+                ballX, ballY, ballDir, hit_y=display_height - ball_size)
             ballY = display_height - ball_size
         if ballX <= pad_width:
             ballX = pad_width
             ballY = hit_point(ballX, ballY, ballDir, hit_x=pad_width)
         elif ballX >= display_width - pad_width - ball_size:
             ballX = display_width - pad_width - ball_size
-            ballY = hit_point(ballX, ballY, ballDir, hit_x=display_width - pad_width - ball_size)
+            ballY = hit_point(
+                ballX,
+                ballY, ballDir, hit_x=display_width - pad_width - ball_size)
 
         # display game objects
         displayBackground()
@@ -522,6 +580,8 @@ def gameLoop():
     gameQuit()
 
 # combo quit
+
+
 def gameQuit():
     pygame.mixer.music.pause()
     pygame.mixer.stop()
@@ -529,6 +589,8 @@ def gameQuit():
     quit()
 
 # game exception page
+
+
 def gameExcept():
     gameDisplay.fill(white)
     displayMsg("Ops!", red, -90, "large")
@@ -542,10 +604,11 @@ def gameExcept():
                 gameQuit()
         clock.tick(FPS)
 
+
 # if __name__ == "__main__":
 #     try:
 gameInit()
-    # except SystemExit:
-    #     pass
-    # except:
-    #     gameExcept()
+# except SystemExit:
+#     pass
+# except:
+#     gameExcept()
